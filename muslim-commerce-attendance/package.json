@@ -1,0 +1,14 @@
+{
+  "name": "muslim-commerce-attendance",
+  "version": "1.0.0",
+  "private": true,
+  "description": "College Attendance Management System for Muslim Commerce College Peshawar - frontend (vanilla HTML/CSS/JS) + zero-dependency Node.js backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Super Admin dashboard for teacher accounts, attendance oversight and audit history at Muslim Commerce College Peshawar.">
+  <title>Super Admin | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/teacher-admin.css">
+</head>
+
+<body data-page="admin" data-title="Super Admin">
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+        <div class="page-header">
+          <div>
+            <h2>Super Admin Dashboard</h2>
+            <p class="page-sub">Teacher access, attendance oversight, account security and a complete activity trail.</p>
+          </div>
+          <div class="page-actions">
+            <a class="btn btn-outline" href="teacher-accounts.html"><i class="fa-solid fa-users-gear"></i> Teacher Accounts</a>
+            <a class="btn btn-primary" href="teacher-accounts.html?new=1"><i class="fa-solid fa-user-plus"></i> New Teacher</a>
+          </div>
+        </div>
+
+        <div class="ta-stats ta-stats-wide" id="adminStats">
+          <div class="ta-empty"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading administration summary...</p></div>
+        </div>
+
+        <div class="ta-grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3>Reset requests</h3>
+                <p class="card-sub">Teachers who asked for help from the sign-in page.</p>
+              </div>
+              <a href="teacher-accounts.html" class="btn btn-outline btn-sm">Manage</a>
+            </div>
+            <div id="adminResetRequests" class="ta-list"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3>Teacher attendance submissions</h3>
+                <p class="card-sub">Latest submissions for review and correction.</p>
+              </div>
+              <a href="attendance.html?tab=records" class="btn btn-outline btn-sm">Attendance records</a>
+            </div>
+            <div id="adminSubmissions" class="ta-list"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3>Recent activity</h3>
+              <p class="card-sub">Logins, account changes, attendance and marks actions.</p>
+            </div>
+            <a href="teacher-accounts.html" class="btn btn-outline btn-sm">Account register</a>
+          </div>
+          <div id="adminAudit" class="ta-audit-list"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/teacher-admin.js"></script>
+</body>
+</html>

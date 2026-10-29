@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create and manage secure teacher portal accounts, assignments and permissions at Muslim Commerce College Peshawar.">
+  <title>Teacher Accounts | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/teacher-admin.css">
+</head>
+
+<body data-page="teacher-accounts" data-title="Teacher Accounts">
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+        <div class="page-header">
+          <div>
+            <h2>Teacher Accounts</h2>
+            <p class="page-sub">Create portal logins, assign classes and subjects, set permissions and control account access.</p>
+          </div>
+          <div class="page-actions">
+            <a class="btn btn-outline" href="admin.html"><i class="fa-solid fa-shield-halved"></i> Super Admin</a>
+            <button type="button" class="btn btn-outline" id="sabihPresetBtn"><i class="fa-solid fa-user-clock"></i> Add Sabih ud din</button>
+            <button type="button" class="btn btn-primary" id="newTeacherBtn"><i class="fa-solid fa-user-plus"></i> New Teacher</button>
+          </div>
+        </div>
+
+        <div class="ta-stats" id="taStats"></div>
+
+        <div class="card">
+          <div class="card-header ta-toolbar">
+            <div class="ta-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="search" id="taSearch" placeholder="Search portal number, name, email, class or subject" autocomplete="off">
+            </div>
+            <div class="ta-filters">
+              <select class="form-select" id="taStatusFilter" aria-label="Filter by status">
+                <option value="">All statuses</option>
+                <option value="active">Active</option>
+                <option value="disabled">Disabled</option>
+              </select>
+              <select class="form-select" id="taClassFilter" aria-label="Filter by class">
+                <option value="">All classes</option>
+              </select>
+              <button type="button" class="btn btn-outline btn-sm" id="taRefresh"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+          </div>
+
+          <div id="taTableWrap" class="table-scroll">
+            <div class="ta-empty"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading teacher accounts...</p></div>
+          </div>
+
+          <div class="ta-pager" id="taPager"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop ta-modal-lg" id="teacherModal" role="dialog" aria-modal="true" aria-labelledby="teacherModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="teacherModalTitle">New teacher account</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="teacherForm" novalidate>
+          <input type="hidden" id="tfId">
+          <div class="ta-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="tfFullName">Full name <span class="req">*</span></label>
+              <input class="form-input" id="tfFullName" required maxlength="120">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfFatherName">Father name</label>
+              <input class="form-input" id="tfFatherName" maxlength="120">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfPortal">Portal number</label>
+              <input class="form-input" id="tfPortal" placeholder="Auto: TCH-0001" maxlength="20">
+              <span class="form-hint">Generated automatically when left blank.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfStatus">Account status</label>
+              <select class="form-select" id="tfStatus">
+                <option value="active">Active</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfUsername">Username</label>
+              <input class="form-input" id="tfUsername" placeholder="Optional login username" maxlength="60" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfEmail">Email</label>
+              <input class="form-input" type="email" id="tfEmail" maxlength="160" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfContact">Contact number</label>
+              <input class="form-input" id="tfContact" maxlength="60">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfDesignation">Designation</label>
+              <input class="form-input" id="tfDesignation" placeholder="Teacher" maxlength="120">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfQualification">Qualification</label>
+              <input class="form-input" id="tfQualification" maxlength="120">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfSession">Academic session</label>
+              <select class="form-select" id="tfSession"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfPassword">Initial password</label>
+              <input class="form-input" type="password" id="tfPassword" minlength="8" autocomplete="new-password">
+              <span class="form-hint" id="tfPasswordHint">Leave blank to generate a one-time password.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="tfPhoto">Photograph</label>
+              <input class="form-input" type="file" id="tfPhoto" accept="image/png,image/jpeg,image/webp">
+              <span class="form-hint">Optional. Resized in the browser before upload.</span>
+            </div>
+          </div>
+
+          <div class="ta-photo-preview" id="tfPhotoPreview" hidden>
+            <img id="tfPhotoImg" alt="Teacher photograph preview">
+            <button type="button" class="btn btn-outline btn-sm" id="tfPhotoRemove">Remove photo</button>
+          </div>
+
+          <div class="ta-section">
+            <div class="ta-section-head">
+              <h4>Class assignments</h4>
+              <span>Only assigned classes appear in the teacher portal.</span>
+            </div>
+            <div class="ta-checks" id="tfClasses"></div>
+          </div>
+
+          <div class="ta-section">
+            <div class="ta-section-head">
+              <h4>Subject assignments</h4>
+              <span>Choose subjects from the selected classes.</span>
+            </div>
+            <div class="ta-checks ta-subject-checks" id="tfSubjects"></div>
+          </div>
+
+          <div class="ta-section">
+            <div class="ta-section-head">
+              <h4>Permissions</h4>
+              <span>Every permission is enforced by the server, not only hidden in the interface.</span>
+            </div>
+            <div class="ta-checks ta-permission-checks" id="tfPermissions"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+        <button type="submit" form="teacherForm" class="btn btn-primary" id="tfSave"><i class="fa-solid fa-floppy-disk"></i> Save account</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="portalModal" role="dialog" aria-modal="true" aria-labelledby="portalModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="portalModalTitle">Change portal number</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="muted" id="portalModalTeacher"></p>
+        <div class="form-group">
+          <label class="form-label" for="pmPortal">New portal number <span class="req">*</span></label>
+          <input class="form-input" id="pmPortal" placeholder="TCH-0001" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pmReason">Reason <span class="req">*</span></label>
+          <textarea class="form-textarea" id="pmReason" rows="3" maxlength="300" placeholder="Recorded in the audit trail"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+        <button type="button" class="btn btn-primary" id="pmSave">Change portal number</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="passwordModal" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="passwordModalTitle">One-time password</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="muted" id="passwordModalText"></p>
+        <div class="ta-secret"><code id="passwordSecret"></code><button type="button" class="btn btn-outline btn-sm" id="copyPassword"><i class="fa-regular fa-copy"></i> Copy</button></div>
+        <div class="ta-warning"><i class="fa-solid fa-triangle-exclamation"></i><span>This password is shown once. The teacher must change it at first sign-in.</span></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-modal-close>Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop ta-modal-lg" id="auditModal" role="dialog" aria-modal="true" aria-labelledby="auditModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="auditModalTitle">Teacher activity</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="auditBody" class="ta-audit-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/teacher-admin.js"></script>
+</body>
+</html>

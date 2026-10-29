@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Take and review daily attendance at Muslim Commerce College Peshawar.">
+  <title>Take Attendance — Attendance Management System | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body data-page="attendance" data-title="Attendance">
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+
+        <div class="page-header">
+          <div>
+            <h2>Take Attendance</h2>
+            <p class="page-sub">Select a class (and section where applicable), mark each student, then save the sheet.</p>
+          </div>
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab-btn active" data-tab="take" role="tab">Take Attendance</button>
+            <button type="button" class="tab-btn" data-tab="records" role="tab">Records</button>
+          </div>
+        </div>
+
+        <!-- ================= Take attendance panel ================= -->
+        <section id="takePanel">
+
+          <div class="filter-bar">
+            <div class="filter-item">
+              <label class="form-label" for="attClassSelect">Class</label>
+              <select class="form-select" id="attClassSelect"></select>
+            </div>
+            <div class="filter-item" id="attSectionGroup">
+              <label class="form-label" for="attSectionSelect">Section</label>
+              <select class="form-select" id="attSectionSelect"></select>
+            </div>
+            <div class="filter-item">
+              <label class="form-label" for="attSubjectSelect">Subject</label>
+              <select class="form-select" id="attSubjectSelect"></select>
+            </div>
+            <div class="filter-item">
+              <label class="form-label" for="attDateInput">Date</label>
+              <input class="form-input" type="date" id="attDateInput">
+            </div>
+            <div class="filter-actions">
+              <div class="search-box att-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" class="form-input" id="attSearchInput" placeholder="Student name or roll no.">
+              </div>
+              <button type="button" class="btn btn-outline" id="attSearchBtn">
+                <i class="fa-solid fa-magnifying-glass"></i> Search Student
+              </button>
+              <button type="button" class="btn btn-outline" id="markAllBtn">
+                <i class="fa-solid fa-check-double"></i> Mark All Present
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Attendance Sheet</div>
+                <div class="card-sub">Present / Absent / Leave for every student in the class</div>
+              </div>
+              <div class="sheet-meta" id="sheetMeta">
+                <span class="badge badge-gray">Loading…</span>
+              </div>
+            </div>
+
+            <div class="card-body flush">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Roll No.</th>
+                      <th>Student</th>
+                      <th>Father’s Name</th>
+                      <th>Status</th>
+                      <th>Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody id="attTableBody">
+                    <tr><td colspan="6" class="muted">Loading attendance sheet…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Counters + save (sticky, stays reachable while scrolling) -->
+            <div class="attendance-bar">
+              <div class="counters">
+                <span class="counter-chip c-total"><span class="chip-dot"></span> Total Students: <strong id="cntTotal">0</strong></span>
+                <span class="counter-chip c-present"><span class="chip-dot"></span> Present: <strong id="cntPresent">0</strong></span>
+                <span class="counter-chip c-absent"><span class="chip-dot"></span> Absent: <strong id="cntAbsent">0</strong></span>
+                <span class="counter-chip c-leave"><span class="chip-dot"></span> Leave: <strong id="cntLeave">0</strong></span>
+              </div>
+              <div class="bar-actions">
+                <button type="button" class="btn btn-outline btn-lg" id="printAttendanceBtn">
+                  <i class="fa-solid fa-print"></i> Print Attendance
+                </button>
+                <button type="button" class="btn btn-primary btn-lg" id="saveAttendanceBtn">
+                  <i class="fa-solid fa-floppy-disk"></i> Save Attendance
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ================= Records panel ================= -->
+        <section id="recordsPanel" hidden>
+
+          <div class="filter-bar">
+            <div class="filter-item">
+              <label class="form-label" for="recClassFilter">Class</label>
+              <select class="form-select" id="recClassFilter"></select>
+            </div>
+            <div class="filter-item">
+              <label class="form-label" for="recDateFilter">Date</label>
+              <input class="form-input" type="date" id="recDateFilter">
+            </div>
+            <div class="filter-item wide">
+              <label class="form-label">Results</label>
+              <div class="form-input muted" id="recCount" aria-live="polite">Loading…</div>
+            </div>
+            <div class="filter-actions">
+              <button type="button" class="btn btn-outline" id="printStudentAttBtn">
+                <i class="fa-solid fa-print"></i> Print Student Attendance
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body flush">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Class</th>
+                      <th>Section</th>
+                      <th>Subject</th>
+                      <th>Total</th>
+                      <th>Present</th>
+                      <th>Absent</th>
+                      <th>Leave</th>
+                      <th>Submitted</th>
+                      <th class="text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recTableBody">
+                    <tr><td colspan="10" class="muted">Loading records…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Saved record details modal -->
+  <div class="modal-backdrop" id="recordModal" role="dialog" aria-modal="true" aria-labelledby="recordModalTitle">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="recordModalTitle">Attendance record</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="recordModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print individual student attendance modal -->
+  <div class="modal-backdrop" id="printStudentAttModal" role="dialog" aria-modal="true" aria-labelledby="printStudentAttTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="printStudentAttTitle">Print Student Attendance</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-lead">Select a student and a period. Only this student's saved attendance records are printed.</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="psaClass">Class</label>
+            <select class="form-select" id="psaClass"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="psaSearch">Search</label>
+            <input class="form-input" type="search" id="psaSearch" placeholder="Name, Student ID or roll no.">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="psaStudent">Student <span class="req">*</span></label>
+            <select class="form-select" id="psaStudent"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="psaPeriod">Period</label>
+            <select class="form-select" id="psaPeriod"></select>
+          </div>
+          <div class="form-group" id="psaMonthGroup" hidden>
+            <label class="form-label" for="psaMonth">Month</label>
+            <select class="form-select" id="psaMonth"></select>
+          </div>
+          <div class="form-group" id="psaYearGroup" hidden>
+            <label class="form-label" for="psaYear">Year</label>
+            <select class="form-select" id="psaYear"></select>
+          </div>
+          <div class="form-group" id="psaFromGroup" hidden>
+            <label class="form-label" for="psaFrom">From Date</label>
+            <input class="form-input" type="date" id="psaFrom">
+          </div>
+          <div class="form-group" id="psaToGroup" hidden>
+            <label class="form-label" for="psaTo">To Date</label>
+            <input class="form-input" type="date" id="psaTo">
+          </div>
+        </div>
+        <div class="detail-grid" id="psaSummary">
+          <div class="detail-item">
+            <div class="dt-label">Report</div>
+            <div class="dt-value">Select a student to preview the report scope.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+        <button type="button" class="btn btn-outline" id="psaPreviewBtn">
+          <i class="fa-solid fa-eye"></i> Print Preview
+        </button>
+        <button type="button" class="btn btn-primary" id="psaPrintBtn">
+          <i class="fa-solid fa-print"></i> Print Attendance Record
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/students-import.js"></script>
+  <script src="js/print.js"></script>
+  <script src="js/attendance.js"></script>
+</body>
+</html>

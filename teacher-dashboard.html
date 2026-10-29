@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Teacher Portal for attendance, marks, results, DMC and academic planner at Muslim Commerce College Peshawar.">
+  <title>Teacher Portal | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/teacher.css">
+</head>
+
+<body class="tp-app" data-page="teacher-dashboard">
+
+  <header class="tp-topbar">
+    <button type="button" class="tp-menu-btn" id="tpMenuBtn" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+    <a class="tp-brand" href="teacher-dashboard.html">
+      <img src="assets/logo.png" alt="">
+      <span><strong>Muslim Commerce College</strong><small>Teacher Portal</small></span>
+    </a>
+    <div class="tp-top-actions" id="tpTopActions"></div>
+  </header>
+
+  <div class="tp-shell">
+    <aside class="tp-sidebar" id="tpSidebar">
+      <div class="tp-profile-mini" id="tpProfileMini"></div>
+      <nav class="tp-nav" id="tpNav" aria-label="Teacher portal navigation"></nav>
+      <div class="tp-sidebar-foot">
+        <button type="button" class="tp-nav-link" id="tpLogout"><i class="fa-solid fa-right-from-bracket"></i><span>Sign out</span></button>
+        <a class="tp-nav-link" href="index.html"><i class="fa-solid fa-shield-halved"></i><span>Administrator</span></a>
+      </div>
+    </aside>
+    <div class="tp-backdrop" id="tpBackdrop"></div>
+
+    <main class="tp-main">
+      <div id="tpContent">
+        <div class="tp-loading"><i class="fa-solid fa-circle-notch fa-spin"></i><p>Loading your portal...</p></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="tpPasswordModal" role="dialog" aria-modal="true" aria-labelledby="tpPasswordTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="tpPasswordTitle">Change password</h3>
+        <button type="button" class="icon-btn" data-modal-close id="tpPasswordClose" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="muted" id="tpPasswordIntro">Choose a strong password with at least 8 characters, including a letter and a number.</p>
+        <form id="tpPasswordForm" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="tpCurrentPassword">Current password</label>
+            <input class="form-input" type="password" id="tpCurrentPassword" autocomplete="current-password" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="tpNewPassword">New password</label>
+            <input class="form-input" type="password" id="tpNewPassword" autocomplete="new-password" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="tpConfirmPassword">Confirm new password</label>
+            <input class="form-input" type="password" id="tpConfirmPassword" autocomplete="new-password" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close id="tpPasswordCancel">Cancel</button>
+        <button type="submit" form="tpPasswordForm" class="btn btn-primary" id="tpPasswordSave">Update password</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop tp-dmc-modal" id="tpDmcModal" role="dialog" aria-modal="true" aria-labelledby="tpDmcTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="tpDmcTitle">DMC preview</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="tpDmcPreview"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Close</button>
+        <button type="button" class="btn btn-primary" id="tpDmcPrintBtn"><i class="fa-solid fa-print"></i> Print DMC</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tp-toast-stack" id="tpToastStack"></div>
+  <div id="tpPrintArea" aria-hidden="true"></div>
+
+  <script src="js/teacher-portal.js"></script>
+</body>
+</html>

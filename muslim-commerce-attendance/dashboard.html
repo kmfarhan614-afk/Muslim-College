@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Attendance dashboard for Muslim Commerce College Peshawar.">
+  <title>Dashboard — Attendance Management System | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body data-page="dashboard" data-title="Dashboard">
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+
+        <!-- Page header -->
+        <div class="page-header">
+          <div>
+            <h2>Dashboard</h2>
+            <p class="page-sub">Welcome back — here is today’s attendance snapshot.</p>
+          </div>
+          <div class="page-actions">
+            <a class="btn btn-outline" href="reports.html">
+              <i class="fa-solid fa-chart-column"></i> View Reports
+            </a>
+            <a class="btn btn-primary" href="attendance.html">
+              <i class="fa-solid fa-clipboard-check"></i> Take Attendance
+            </a>
+          </div>
+        </div>
+
+        <!-- Statistics -->
+        <section class="stats-grid" aria-label="Attendance statistics">
+          <div class="stat-card">
+            <span class="stat-icon i-blue"><i class="fa-solid fa-user-graduate"></i></span>
+            <div>
+              <div class="stat-label">Registered Students</div>
+              <div class="stat-value" id="statTotal">—</div>
+              <div class="stat-sub" id="statTotalSub">Loading…</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon i-green"><i class="fa-solid fa-user-check"></i></span>
+            <div>
+              <div class="stat-label">Present Today</div>
+              <div class="stat-value" id="statPresent">—</div>
+              <div class="stat-sub" id="statPresentSub">Loading…</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon i-red"><i class="fa-solid fa-user-xmark"></i></span>
+            <div>
+              <div class="stat-label">Absent Today</div>
+              <div class="stat-value" id="statAbsent">—</div>
+              <div class="stat-sub" id="statAbsentSub">Loading…</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon i-amber"><i class="fa-solid fa-percent"></i></span>
+            <div>
+              <div class="stat-label">Attendance Rate</div>
+              <div class="stat-value" id="statRate">—</div>
+              <div class="stat-sub" id="statRateSub">Loading…</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon i-green"><i class="fa-solid fa-users"></i></span>
+            <div>
+              <div class="stat-label">Active Students</div>
+              <div class="stat-value" id="statActive">—</div>
+              <div class="stat-sub" id="statActiveSub">Loading…</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon i-amber"><i class="fa-solid fa-box-archive"></i></span>
+            <div>
+              <div class="stat-label">Archived Students</div>
+              <div class="stat-value" id="statArchived">—</div>
+              <div class="stat-sub" id="statArchivedSub">Loading…</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon i-blue"><i class="fa-regular fa-calendar-days"></i></span>
+            <div>
+              <div class="stat-label">Academic Session</div>
+              <div class="stat-value" id="statSession">—</div>
+              <div class="stat-sub" id="statSessionSub">Loading…</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon i-blue"><i class="fa-solid fa-file-pen"></i></span>
+            <div>
+              <div class="stat-label">Examinations</div>
+              <div class="stat-value" id="statExams">—</div>
+              <div class="stat-sub" id="statExamsSub">Loading…</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts -->
+        <section class="charts-grid" aria-label="Attendance charts">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Today’s Attendance</div>
+                <div class="card-sub">Present vs absent vs leave for today</div>
+              </div>
+              <span class="badge badge-blue"><i class="fa-regular fa-calendar"></i> Today</span>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap">
+                <canvas id="todayChart" role="img" aria-label="Today's attendance chart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Weekly Attendance</div>
+                <div class="card-sub">Daily attendance percentage, Monday to Saturday</div>
+              </div>
+              <span class="badge badge-green">This week</span>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap">
+                <canvas id="weeklyChart" role="img" aria-label="Weekly attendance chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Class overview + recent activity -->
+        <section class="dash-grid">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Class Attendance Overview</div>
+                <div class="card-sub">Today’s marks by class and section</div>
+              </div>
+              <a class="link-more" href="attendance.html?tab=records">
+                All records <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+            <div class="card-body flush">
+              <div class="filter-bar inline">
+                <div class="filter-item">
+                  <label class="form-label" for="dashClassFilter">Class</label>
+                  <select class="form-select" id="dashClassFilter"></select>
+                </div>
+                <div class="filter-item">
+                  <label class="form-label" for="dashYearFilter">Academic Year</label>
+                  <select class="form-select" id="dashYearFilter"></select>
+                </div>
+                <div class="filter-item">
+                  <label class="form-label" for="dashGroupFilter">Study Group</label>
+                  <select class="form-select" id="dashGroupFilter"></select>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Class</th>
+                      <th>Section</th>
+                      <th>Students</th>
+                      <th>Present</th>
+                      <th>Absent</th>
+                      <th>Leave</th>
+                      <th>Attendance %</th>
+                      <th class="text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="classTableBody">
+                    <tr><td colspan="8" class="muted">Loading class overview…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Recent Activity</div>
+                <div class="card-sub">Latest submissions today</div>
+              </div>
+              <span class="activity-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
+            </div>
+            <div class="card-body">
+              <div class="activity-list" id="activityList">
+                <p class="muted">Loading activity…</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Section details modal -->
+  <div class="modal-backdrop" id="sectionModal" role="dialog" aria-modal="true" aria-labelledby="sectionModalTitle">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="sectionModalTitle">Section details</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="sectionModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Close</button>
+        <a class="btn btn-primary" href="attendance.html">
+          <i class="fa-solid fa-clipboard-check"></i> Take Attendance
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/students-import.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Attendance reports of Muslim Commerce College Peshawar.">
+  <title>Attendance Reports — Attendance Management System | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body data-page="reports" data-title="Attendance Reports">
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+
+        <!-- Print-only letterhead -->
+        <div class="print-only print-head">
+          <h1>Muslim Commerce College Peshawar</h1>
+          <div class="print-sub">Attendance Report — Attendance Management System</div>
+          <div class="print-meta" id="reportFilterSummary"></div>
+        </div>
+
+        <div class="page-header no-print">
+          <div>
+            <h2>Attendance Reports</h2>
+            <p class="page-sub">Filter attendance by period, class, section, academic year, study group and subject.</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-outline" id="monthlyPrintBtn">
+              <i class="fa-solid fa-calendar-days"></i> Print Monthly Attendance
+            </button>
+            <button type="button" class="btn btn-outline" id="printBtn">
+              <i class="fa-solid fa-print"></i> Print Report
+            </button>
+            <button type="button" class="btn btn-primary" id="exportCsvBtn">
+              <i class="fa-solid fa-file-csv"></i> Export CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar no-print">
+          <div class="filter-item">
+            <label class="form-label" for="repFrom">Date From</label>
+            <input class="form-input" type="date" id="repFrom">
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="repTo">Date To</label>
+            <input class="form-input" type="date" id="repTo">
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="repClass">Class</label>
+            <select class="form-select" id="repClass"></select>
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="repYear">Academic Year</label>
+            <select class="form-select" id="repYear"></select>
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="repGroup">Study Group</label>
+            <select class="form-select" id="repGroup"></select>
+          </div>
+          <div class="filter-item" id="repSectionGroup">
+            <label class="form-label" for="repSection">Section</label>
+            <select class="form-select" id="repSection"></select>
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="repSubject">Subject</label>
+            <select class="form-select" id="repSubject"></select>
+          </div>
+          <div class="filter-actions">
+            <button type="button" class="btn btn-primary" id="applyFiltersBtn">
+              <i class="fa-solid fa-filter"></i> Apply Filters
+            </button>
+            <button type="button" class="btn btn-ghost" id="resetFiltersBtn">Reset</button>
+          </div>
+        </div>
+
+        <!-- Report cards -->
+        <section class="stats-grid" aria-label="Report summary">
+          <div class="stat-card">
+            <span class="stat-icon i-blue"><i class="fa-solid fa-users"></i></span>
+            <div>
+              <div class="stat-label">Total Students</div>
+              <div class="stat-value" id="repTotalStudents">—</div>
+              <div class="stat-sub" id="repTotalStudentsSub">Selected scope</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon i-green"><i class="fa-solid fa-user-check"></i></span>
+            <div>
+              <div class="stat-label">Present</div>
+              <div class="stat-value" id="repPresent">—</div>
+              <div class="stat-sub" id="repPresentSub">—</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon i-red"><i class="fa-solid fa-user-xmark"></i></span>
+            <div>
+              <div class="stat-label">Absent</div>
+              <div class="stat-value" id="repAbsent">—</div>
+              <div class="stat-sub" id="repAbsentSub">—</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon i-amber"><i class="fa-solid fa-plane-departure"></i></span>
+            <div>
+              <div class="stat-label">Leave</div>
+              <div class="stat-value" id="repLeave">—</div>
+              <div class="stat-sub" id="repLeaveSub">—</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon i-blue"><i class="fa-solid fa-chart-line"></i></span>
+            <div>
+              <div class="stat-label">Average Attendance</div>
+              <div class="stat-value" id="repAvg">—</div>
+              <div class="stat-sub" id="repAvgSub">—</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Report table -->
+        <div class="card">
+          <div class="card-header no-print">
+            <div>
+              <div class="card-title">Attendance Report</div>
+              <div class="card-sub">One row per submitted attendance sheet</div>
+            </div>
+          </div>
+          <div class="card-body flush">
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Class</th>
+                    <th>Section</th>
+                    <th>Subject</th>
+                    <th>Students</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Leave</th>
+                    <th>Attendance %</th>
+                  </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                  <tr><td colspan="9" class="muted">Loading report…</td></tr>
+                </tbody>
+                <tfoot id="reportTotals"></tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <!-- Print monthly attendance modal -->
+  <div class="modal-backdrop" id="monthlyPrintModal" role="dialog" aria-modal="true" aria-labelledby="monthlyPrintTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="monthlyPrintTitle">Print Monthly Attendance</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-lead">Generate a landscape monthly attendance register (one column per day).</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="mpClass">Class <span class="req">*</span></label>
+            <select class="form-select" id="mpClass"></select>
+          </div>
+          <div class="form-group" id="mpSectionGroup">
+            <label class="form-label" for="mpSection">Section</label>
+            <select class="form-select" id="mpSection"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="mpMonth">Month</label>
+            <select class="form-select" id="mpMonth"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="mpYear">Year</label>
+            <select class="form-select" id="mpYear"></select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+        <button type="button" class="btn btn-primary" id="monthlyPrintConfirmBtn">
+          <i class="fa-solid fa-print"></i> Print Register
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/students-import.js"></script>
+  <script src="js/print.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>

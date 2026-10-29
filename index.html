@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sign in to the Attendance Management System of Muslim Commerce College Peshawar.">
+  <title>Sign In — Attendance Management System | Muslim Commerce College Peshawar</title>
+
+  <!-- Apply the stored theme before first paint (prevents a theme flash) -->
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run, keep default theme */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="login-page" data-page="login" data-title="Sign In">
+
+  <main class="login-shell">
+
+    <!-- Large visual area: college photographs + dark blue overlay -->
+    <section class="login-visual" aria-label="College campus photographs">
+      <div class="login-slides" aria-hidden="true">
+        <img class="slide" src="assets/college-1.jpg" alt="">
+        <img class="slide" src="assets/college-2.jpg" alt="">
+        <img class="slide" src="assets/college-3.jpg" alt="">
+      </div>
+      <div class="login-overlay"></div>
+
+      <div class="login-brand">
+        <span class="login-eyebrow"><i class="fa-solid fa-location-dot"></i> Peshawar, Pakistan</span>
+        <h1>Muslim Commerce College Peshawar</h1>
+        <h2>Attendance Management System</h2>
+        <p class="login-lead">Smart digital attendance management for a modern college.</p>
+
+        <ul class="login-points">
+          <li><i class="fa-solid fa-bolt"></i> Mark daily attendance in seconds, per class and section</li>
+          <li><i class="fa-solid fa-chart-line"></i> Live dashboards, trends and printable reports</li>
+          <li><i class="fa-solid fa-shield-halved"></i> Student records, faculty directory and class registers</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Login card -->
+    <section class="login-form-side">
+      <form class="login-card" id="loginForm" novalidate>
+        <img class="login-logo" src="assets/logo.png" alt="Muslim Commerce College Peshawar logo">
+
+        <h3>Welcome back</h3>
+        <p class="login-sub">Sign in to continue to your dashboard</p>
+
+        <div class="demo-hint">
+          <i class="fa-solid fa-key"></i>
+          <div>
+            <strong>Administrator demo account</strong> — email <code>admin@college.com</code>,
+            password <code>admin123</code>
+            <button type="button" class="login-link login-hint-link" id="fillDemo">
+              Fill credentials for me
+            </button>
+          </div>
+        </div>
+
+        <div class="login-form">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Email address <span class="req">*</span></label>
+            <div class="input-wrap has-icon">
+              <i class="fa-solid fa-envelope input-icon"></i>
+              <input class="form-input" type="email" id="loginEmail" name="email"
+                     placeholder="admin@college.com" autocomplete="username" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Password <span class="req">*</span></label>
+            <div class="input-wrap has-icon has-action">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input class="form-input" type="password" id="loginPassword" name="password"
+                     placeholder="Enter your password" autocomplete="current-password" required>
+              <button type="button" class="input-action" id="togglePassword"
+                      aria-label="Show password" title="Show password">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="login-row">
+            <label class="checkbox-row">
+              <input type="checkbox" id="rememberMe" name="remember">
+              <span>Remember me</span>
+            </label>
+            <button type="button" class="login-link" id="forgotBtn">Forgot password?</button>
+          </div>
+
+          <p class="login-error" id="loginError" hidden>
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span id="loginErrorText"></span>
+          </p>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-full" id="loginBtn">
+            <i class="fa-solid fa-right-to-bracket"></i> Sign in to dashboard
+          </button>
+        </div>
+      </form>
+
+      <p class="login-footer">
+        Administrator access uses the credentials configured on server.js.
+        Teacher accounts are created and controlled by the Super Admin.<br>
+        <a class="login-link" href="teacher-login.html"><i class="fa-solid fa-chalkboard-user"></i> Teacher Portal sign in</a>
+      </p>
+    </section>
+  </main>
+
+  <!-- Forgot password dialog -->
+  <div class="modal-backdrop" id="forgotModal" role="dialog" aria-modal="true" aria-labelledby="forgotModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="forgotModalTitle">Reset password</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="muted">
+          Enter the admin email address. In this HTML prototype no email is sent —
+          password reset will work once Supabase Auth is connected.
+        </p>
+        <form id="forgotForm" class="form-grid mt-16" novalidate>
+          <div class="form-group span-2">
+            <label class="form-label" for="forgotEmail">Email address <span class="req">*</span></label>
+            <input class="form-input" type="email" id="forgotEmail" placeholder="admin@college.com" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+        <button type="submit" form="forgotForm" class="btn btn-primary" id="forgotSubmit">Send reset link</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

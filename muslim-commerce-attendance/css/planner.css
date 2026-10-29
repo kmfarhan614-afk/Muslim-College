@@ -1,0 +1,1007 @@
+/* ==========================================================================
+   Muslim Commerce College Peshawar — Yearly Academic Planner
+   planner.css — colour planner styles (activity-coloured dates)
+   Loaded only on planner.html, after style.css.
+
+   Activity colours are centralised as --planner-* custom properties so the
+   whole palette can be tuned in one place. Each colour also carries a paired
+   ink (text) colour chosen for contrast/readability.
+   ========================================================================== */
+
+:root {
+  --planner-sunday: #B34278;
+  --planner-regular-class: #D7C34B;
+  --planner-examination: #E5C63A;
+  --planner-holiday: #D9E7CA;
+  --planner-tour: #783030;
+  --planner-debate: #C15B79;
+  --planner-welcome: #55A59A;
+  --planner-naat: #C6D1D8;
+  --planner-mcq: #1B9AC3;
+  --planner-ptm: #292929;
+  --planner-guest-speaker: #BA7445;
+  --planner-food-gala: #8A9E4A;
+  --planner-weekday: #D9E4ED;
+  --planner-activity: #9FB1BD;
+  --planner-ink-dark: #111111;
+  --planner-ink-light: #ffffff;
+}
+
+/* Swatch utilities: set --sw-bg / --sw-ink for whatever element carries them
+   (calendar cell, event chip, legend item, code badge). Elements read these
+   with a sensible fallback when no swatch class is present. */
+.sw-rc {
+  --sw-bg: var(--planner-regular-class);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-exam {
+  --sw-bg: var(--planner-examination);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-mcq {
+  --sw-bg: var(--planner-mcq);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-sunday {
+  --sw-bg: var(--planner-sunday);
+  --sw-ink: var(--planner-ink-light);
+}
+
+.sw-holiday {
+  --sw-bg: var(--planner-holiday);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-odt {
+  --sw-bg: var(--planner-tour);
+  --sw-ink: var(--planner-ink-light);
+}
+
+.sw-dc {
+  --sw-bg: var(--planner-debate);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-wp {
+  --sw-bg: var(--planner-welcome);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-nc {
+  --sw-bg: var(--planner-naat);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-ptm {
+  --sw-bg: var(--planner-ptm);
+  --sw-ink: var(--planner-ink-light);
+}
+
+.sw-gs {
+  --sw-bg: var(--planner-guest-speaker);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-fg {
+  --sw-bg: var(--planner-food-gala);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-weekday {
+  --sw-bg: var(--planner-weekday);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.sw-activity {
+  --sw-bg: var(--planner-activity);
+  --sw-ink: var(--planner-ink-dark);
+}
+
+.planner {
+  --pl-ink: #111111;
+  --pl-ink-2: #2b2b2b;
+  --pl-ink-3: #4a4a4a;
+  --pl-muted: #6b6b6b;
+  --pl-faint: #8c8c8c;
+  --pl-line: #d8d8d8;
+  --pl-line-2: #bcbcbc;
+  --pl-paper: #ffffff;
+  --pl-wash: #f5f5f5;
+  --pl-wash-2: #ebebeb;
+  --pl-wash-3: #e0e0e0;
+  --pl-dark: #1c1c1c;
+  --pl-dark-soft: #3a3a3a;
+
+  color: var(--pl-ink);
+  font-size: 14px;
+}
+
+.planner * {
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Sheet + heading
+   -------------------------------------------------------------------------- */
+.pl-sheet {
+  background: var(--pl-paper);
+  border: 1px solid var(--pl-line-2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.pl-head {
+  padding: 20px 22px;
+  border-bottom: 3px solid var(--pl-ink);
+  background: var(--pl-paper);
+}
+
+.pl-head-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pl-crest {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.pl-head-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.pl-college {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pl-ink);
+  line-height: 1.15;
+}
+
+.pl-place {
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--pl-muted);
+}
+
+.pl-title {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--pl-ink);
+  background: var(--pl-dark);
+  color: #fff;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.pl-head-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--pl-ink-2);
+}
+
+.pl-head-meta b {
+  color: var(--pl-ink);
+  font-weight: 700;
+}
+
+.pl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--pl-line-2);
+  border-radius: 999px;
+  background: var(--pl-wash);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pl-ink-2);
+}
+
+/* --------------------------------------------------------------------------
+   Toolbar
+   -------------------------------------------------------------------------- */
+.pl-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--pl-line);
+  background: var(--pl-wash);
+}
+
+.pl-toolbar .pl-field {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--pl-ink-3);
+}
+
+.pl-toolbar select,
+.pl-toolbar input[type="text"] {
+  font: inherit;
+  font-size: 12.5px;
+  padding: 5px 8px;
+  border: 1px solid var(--pl-line-2);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--pl-ink);
+}
+
+.pl-months-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pl-jump {
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 4px 9px;
+  border: 1px solid var(--pl-line-2);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--pl-ink-2);
+  cursor: pointer;
+}
+
+.pl-jump:hover {
+  background: var(--pl-wash-2);
+}
+
+.pl-btn {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border: 1px solid var(--pl-ink);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--pl-ink);
+  cursor: pointer;
+}
+
+.pl-btn:hover {
+  background: var(--pl-wash-2);
+}
+
+.pl-btn.pl-btn-solid {
+  background: var(--pl-dark);
+  color: #fff;
+}
+
+.pl-btn.pl-btn-solid:hover {
+  background: #000;
+}
+
+.pl-spacer {
+  flex: 1 1 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Months
+   -------------------------------------------------------------------------- */
+.pl-months {
+  padding: 16px 22px 4px;
+  display: grid;
+  gap: 16px;
+}
+
+.pl-month {
+  border: 1px solid var(--pl-line-2);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--pl-paper);
+}
+
+.pl-month-head {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 2px solid var(--pl-ink);
+  background: var(--pl-wash-2);
+}
+
+.pl-month-toggle {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--pl-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pl-month-toggle:hover {
+  background: var(--pl-wash-3);
+}
+
+.pl-month-print {
+  flex: 0 0 auto;
+  border: 0;
+  border-left: 1px solid var(--pl-line-2);
+  background: transparent;
+  color: var(--pl-ink-3);
+  padding: 0 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pl-month-print:hover {
+  background: var(--pl-wash-3);
+  color: var(--pl-ink);
+}
+
+.pl-month-name {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pl-month-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--pl-line-2);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--pl-ink-3);
+}
+
+.pl-month-sum-mini {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--pl-ink-3);
+}
+
+.pl-month-sum-mini b {
+  color: var(--pl-ink);
+}
+
+.pl-month-caret {
+  transition: transform 160ms ease;
+}
+
+.pl-month.is-collapsed .pl-month-caret {
+  transform: rotate(-90deg);
+}
+
+.pl-month.is-collapsed .pl-month-body {
+  display: none;
+}
+
+.pl-month-body {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* --------------------------------------------------------------------------
+   Calendar grid
+   -------------------------------------------------------------------------- */
+.pl-cal {
+  border: 1px solid var(--pl-line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pl-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.pl-cal-dow {
+  padding: 6px 4px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--pl-dark-soft);
+  border-right: 1px solid #555;
+}
+
+.pl-cal-dow:last-child {
+  border-right: 0;
+}
+
+.pl-cal-cell {
+  min-height: 62px;
+  padding: 4px 5px;
+  border-top: 1px solid var(--pl-line);
+  border-right: 1px solid var(--pl-line);
+  background: var(--sw-bg, var(--planner-weekday));
+  color: var(--sw-ink, var(--planner-ink-dark));
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pl-cal-cell:nth-child(7n) {
+  border-right: 0;
+}
+
+.pl-cal-cell.is-blank {
+  background: var(--pl-wash);
+  color: var(--pl-muted);
+}
+
+.pl-cal-num {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--sw-ink, var(--planner-ink-dark));
+  line-height: 1.1;
+}
+
+.pl-cal-ev {
+  display: block;
+  font-size: 10px;
+  line-height: 1.25;
+  font-weight: 700;
+  padding: 2px 4px;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 4px;
+  background: var(--sw-bg, #fff);
+  color: var(--sw-ink, var(--pl-ink-2));
+  overflow: hidden;
+}
+
+.pl-cal-ev.is-unverified::after {
+  content: " ?";
+  font-weight: 800;
+}
+
+/* --------------------------------------------------------------------------
+   Month details table + summary
+   -------------------------------------------------------------------------- */
+.pl-detail-wrap {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.pl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.pl-table th {
+  background: var(--pl-dark-soft);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 6px 8px;
+  border: 1px solid #555;
+  white-space: nowrap;
+}
+
+.pl-table td {
+  padding: 6px 8px;
+  border: 1px solid var(--pl-line);
+  color: var(--pl-ink-2);
+  vertical-align: top;
+}
+
+.pl-table tbody tr:nth-child(even) td {
+  background: var(--pl-wash);
+}
+
+.pl-table .pl-nowrap {
+  white-space: nowrap;
+}
+
+.pl-code {
+  display: inline-block;
+  min-width: 34px;
+  padding: 1px 6px;
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 4px;
+  background: var(--sw-bg, #fff);
+  color: var(--sw-ink, var(--pl-ink-2));
+}
+
+.pl-tbc {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border: 1px dashed var(--pl-ink-3);
+  border-radius: 4px;
+  color: var(--pl-ink-2);
+}
+
+.pl-row-action {
+  border: 0;
+  background: transparent;
+  color: var(--pl-ink-3);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+.pl-row-action:hover {
+  color: var(--pl-ink);
+}
+
+/* Month summary */
+.pl-summary {
+  border: 1px solid var(--pl-line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pl-summary-title {
+  padding: 6px 10px;
+  background: var(--pl-dark-soft);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pl-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pl-sum-item {
+  padding: 8px 10px;
+  border-top: 1px solid var(--pl-line);
+  border-right: 1px solid var(--pl-line);
+  min-width: 0;
+}
+
+.pl-sum-item:nth-child(2n) {
+  border-right: 0;
+}
+
+.pl-sum-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pl-muted);
+}
+
+.pl-sum-value {
+  font-size: 13px;
+  color: var(--pl-ink);
+  word-break: break-word;
+}
+
+.pl-sum-value .pl-tbc,
+.pl-sum-value .pl-code {
+  font-size: 11px;
+}
+
+.pl-sum-item.pl-span-2 {
+  grid-column: 1 / -1;
+  border-right: 0;
+}
+
+.pl-est {
+  font-size: 10.5px;
+  color: var(--pl-faint);
+  font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   Panels (holidays, legend, exams, notes)
+   -------------------------------------------------------------------------- */
+.pl-panels {
+  padding: 8px 22px 22px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.pl-panel {
+  border: 1px solid var(--pl-line-2);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--pl-paper);
+}
+
+.pl-panel-head {
+  padding: 9px 13px;
+  background: var(--pl-dark);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pl-panel-body {
+  padding: 12px 13px;
+}
+
+.pl-plain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.pl-hol {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px 10px;
+  align-items: center;
+  padding: 7px 9px;
+  border: 1px solid var(--pl-line);
+  border-radius: 6px;
+  background: var(--pl-wash);
+}
+
+.pl-hol.is-unverified {
+  border-style: dashed;
+  border-color: var(--pl-ink-3);
+  background: #fff;
+}
+
+.pl-hol-name {
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--pl-ink);
+}
+
+.pl-hol-date {
+  font-size: 12px;
+  color: var(--pl-ink-2);
+}
+
+.pl-hol-flag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--pl-ink-3);
+  color: var(--pl-ink-2);
+}
+
+.pl-hol-flag.is-ok {
+  border-color: var(--pl-line-2);
+  color: var(--pl-muted);
+}
+
+.pl-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.pl-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 6px;
+  background: var(--sw-bg, var(--pl-wash));
+  color: var(--sw-ink, var(--pl-ink-2));
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pl-leg-item .pl-code {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.3);
+  color: #111;
+}
+
+.pl-leg-cat {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pl-ink);
+  margin: 12px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--pl-line);
+}
+
+.pl-leg-cat:first-child {
+  margin-top: 0;
+}
+
+.pl-leg-name {
+  min-width: 0;
+}
+
+.pl-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.pl-note {
+  padding: 9px 11px;
+  border: 1px solid var(--pl-line);
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: var(--pl-wash);
+}
+
+.pl-note.is-high {
+  border-left-color: #000;
+}
+
+.pl-note.is-medium {
+  border-left-color: var(--pl-ink-3);
+}
+
+.pl-note.is-low {
+  border-left-color: var(--pl-line-2);
+}
+
+.pl-note-title {
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--pl-ink);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pl-note-sev {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border: 1px solid var(--pl-ink-3);
+  border-radius: 999px;
+  color: var(--pl-ink-2);
+}
+
+.pl-note-text {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--pl-ink-3);
+}
+
+.pl-foot {
+  padding: 12px 22px 16px;
+  border-top: 1px solid var(--pl-line);
+  font-size: 11.5px;
+  color: var(--pl-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  justify-content: space-between;
+}
+
+/* --------------------------------------------------------------------------
+   Edit modals
+   -------------------------------------------------------------------------- */
+.pl-modal .form-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--pl-muted);
+}
+
+.pl-modal .form-hint {
+  font-size: 11.5px;
+  color: var(--pl-faint);
+}
+
+.pl-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--pl-ink-2);
+}
+
+.pl-check input {
+  width: 16px;
+  height: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 1080px) {
+  .pl-month-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  /* Keep the calendar readable on small screens: scroll instead of squashing,
+     preserving the date and activity colours. */
+  .pl-cal {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pl-cal-grid {
+    min-width: 520px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pl-head,
+  .pl-toolbar,
+  .pl-months,
+  .pl-panels,
+  .pl-foot {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .pl-head-top {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .pl-cal-cell {
+    min-height: 54px;
+    padding: 3px;
+  }
+
+  .pl-cal-ev {
+    font-size: 9px;
+  }
+
+  .pl-month-sum-mini {
+    display: none;
+  }
+
+  .pl-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pl-sum-item {
+    border-right: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Print — full colour.
+   Full planner prints A3 landscape; a single month prints A4 landscape.
+   Page size is injected at runtime (see planner.js → printFull/printMonth);
+   colours are forced with print-color-adjust: exact.
+   -------------------------------------------------------------------------- */
+@media print {
+  body[data-page="planner"] {
+    background: #fff !important;
+  }
+
+  body[data-page="planner"] .sidebar,
+  body[data-page="planner"] .sidebar-backdrop,
+  body[data-page="planner"] .topbar,
+  body[data-page="planner"] .page-header,
+  body[data-page="planner"] .pl-toolbar,
+  body[data-page="planner"] .toast-stack,
+  body[data-page="planner"] .modal-backdrop {
+    display: none !important;
+  }
+
+  body[data-page="planner"] .content,
+  body[data-page="planner"] .main {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  .planner,
+  .planner * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .pl-sheet {
+    border: 0;
+    border-radius: 0;
+  }
+
+  .pl-month {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-color: #000;
+  }
+
+  /* Full planner: force every month (and its body) open. */
+  body.pl-print-full .pl-month.is-collapsed .pl-month-body {
+    display: block !important;
+  }
+
+  body.pl-print-full .pl-cal-grid {
+    min-width: 0;
+  }
+
+  body.pl-print-full .pl-cal {
+    overflow: visible !important;
+  }
+
+  /* Single month: hide the other months, panels, footer and print buttons. */
+  body.pl-print-month .pl-month:not(.pl-print-target) {
+    display: none !important;
+  }
+
+  body.pl-print-month .pl-month.is-collapsed .pl-month-body {
+    display: block !important;
+  }
+
+  body.pl-print-month .pl-panels,
+  body.pl-print-month .pl-foot,
+  body.pl-print-month .pl-month-print,
+  body.pl-print-month .pl-row-action {
+    display: none !important;
+  }
+
+  .pl-panels {
+    display: block;
+    padding: 10px 0 0;
+  }
+
+  .pl-panel {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-top: 12px;
+    border-color: #000;
+  }
+}

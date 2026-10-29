@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Class and section register of Muslim Commerce College Peshawar.">
+  <title>Classes — Attendance Management System | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body data-page="classes" data-title="Classes">
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+
+        <div class="page-header">
+          <div>
+            <h2>Classes</h2>
+            <p class="page-sub">Classes, academic years and study groups available for attendance.</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-primary" id="addClassBtn">
+              <i class="fa-solid fa-plus"></i> Add Class
+            </button>
+          </div>
+        </div>
+
+        <!-- Search + filters -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" class="form-input" id="classSearch" placeholder="Search classes...">
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="classYearFilter">Academic Year</label>
+            <select class="form-select" id="classYearFilter"></select>
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="classGroupFilter">Study Group</label>
+            <select class="form-select" id="classGroupFilter"></select>
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="classStatusFilter">Status</label>
+            <select class="form-select" id="classStatusFilter"></select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body flush">
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Class Name</th>
+                    <th>Academic Year</th>
+                    <th>Study Group</th>
+                    <th>Total Students</th>
+                    <th>Assigned Teacher</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="classTableBody">
+                  <tr><td colspan="7" class="muted">Loading classes…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Add / edit class modal -->
+  <div class="modal-backdrop" id="classModal" role="dialog" aria-modal="true" aria-labelledby="classModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="classModalTitle">Add Class</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="classForm" novalidate>
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group span-2">
+              <label class="form-label" for="fClassName">Class Name <span class="req">*</span></label>
+              <input class="form-input" type="text" id="fClassName" name="className"
+                     placeholder="e.g. 1st Year Medical" minlength="3" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fClassYear">Academic Year</label>
+              <select class="form-select" id="fClassYear" name="year"></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fClassGroup">Study Group</label>
+              <select class="form-select" id="fClassGroup" name="group"></select>
+            </div>
+
+            <div class="form-group span-2">
+              <label class="form-label" for="fClassSections">Sections <span class="req-opt">(optional)</span></label>
+              <input class="form-input" type="text" id="fClassSections" name="sections"
+                     placeholder="e.g. A, B, C — leave empty for classes without sections">
+              <span class="form-hint">Optional. Leave empty for section-less classes such as
+                1st Year Medical or 1st Year Computer Science. Removing a section does not move existing students.</span>
+            </div>
+
+            <div class="form-group span-2">
+              <label class="form-label" for="fClassSubjects">Subjects <span class="req">*</span></label>
+              <textarea class="form-textarea" id="fClassSubjects" name="subjects"
+                        placeholder="Biology, Chemistry, Physics, English, Urdu"
+                        required></textarea>
+              <span class="form-hint">Comma separated subject list used on the attendance sheet.</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fClassTeacher">Assigned Teacher</label>
+              <select class="form-select" id="fClassTeacher" name="teacher"></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fClassStatus">Status</label>
+              <select class="form-select" id="fClassStatus" name="status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveClassBtn">
+            <i class="fa-solid fa-floppy-disk"></i> Save Class
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View class modal -->
+  <div class="modal-backdrop" id="classViewModal" role="dialog" aria-modal="true" aria-labelledby="classViewTitle">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="classViewTitle">Class details</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="classViewBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Close</button>
+        <a class="btn btn-primary" id="classViewStudents">
+          <i class="fa-solid fa-user-graduate"></i> View Students
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/students-import.js"></script>
+  <script src="js/classes.js"></script>
+</body>
+</html>

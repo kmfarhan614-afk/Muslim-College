@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Student register of Muslim Commerce College Peshawar.">
+  <title>Students — Attendance Management System | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body data-page="students" data-title="Students">
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+
+        <div class="page-header">
+          <div>
+            <h2>Students</h2>
+            <p class="page-sub">Manage the student register, profiles and attendance percentages.</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-outline" id="importStudentsBtn">
+              <i class="fa-solid fa-file-import"></i> Import Students
+            </button>
+            <button type="button" class="btn btn-outline" id="exportStudentsBtn">
+              <i class="fa-solid fa-file-export"></i> Export CSV
+            </button>
+            <button type="button" class="btn btn-outline" id="printStudentsBtn">
+              <i class="fa-solid fa-print"></i> Print Student List
+            </button>
+            <button type="button" class="btn btn-outline" id="archivedToggleBtn">
+              <i class="fa-solid fa-box-archive"></i> Archived Students
+            </button>
+            <button type="button" class="btn btn-primary" id="addStudentBtn">
+              <i class="fa-solid fa-plus"></i> Add Student
+            </button>
+          </div>
+        </div>
+
+        <!-- Register summary -->
+        <div class="stats-grid" id="registerStats">
+          <div class="stat-card">
+            <div class="stat-icon i-blue"><i class="fa-solid fa-users"></i></div>
+            <div>
+              <div class="stat-label">Registered Students</div>
+              <div class="stat-value" id="statTotal">0</div>
+              <div class="stat-sub" id="statTotalSub">Active in the register</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon i-green"><i class="fa-solid fa-user-check"></i></div>
+            <div>
+              <div class="stat-label">Active</div>
+              <div class="stat-value" id="statActive">0</div>
+              <div class="stat-sub" id="statActiveSub">Showing on the register</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon i-amber"><i class="fa-solid fa-box-archive"></i></div>
+            <div>
+              <div class="stat-label">Archived</div>
+              <div class="stat-value" id="statArchived">0</div>
+              <div class="stat-sub">Removed, still restorable</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon i-red"><i class="fa-solid fa-database"></i></div>
+            <div>
+              <div class="stat-label">Storage Used</div>
+              <div class="stat-value" id="statStorage">0%</div>
+              <div class="stat-sub" id="statStorageSub">Browser storage for the register</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search + filters -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" class="form-input" id="studentSearch" placeholder="Search by name, Student ID, roll no, father, phone or address…">
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="studentClassFilter">Class</label>
+            <select class="form-select" id="studentClassFilter"></select>
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="studentSessionFilter">Academic Session</label>
+            <select class="form-select" id="studentSessionFilter"></select>
+          </div>
+          <div class="filter-item" id="studentSectionFilterItem">
+            <label class="form-label" for="studentSectionFilter">Section</label>
+            <select class="form-select" id="studentSectionFilter"></select>
+          </div>
+          <div class="filter-item" id="studentStatusFilterItem">
+            <label class="form-label" for="studentStatusFilter">Status</label>
+            <select class="form-select" id="studentStatusFilter"></select>
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="studentSort">Sort by</label>
+            <select class="form-select" id="studentSort">
+              <option value="register">Register order</option>
+              <option value="id">Student ID (ascending)</option>
+              <option value="name">Name (A–Z)</option>
+              <option value="roll">Roll No. (ascending)</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label class="form-label" for="studentPageSize">Rows per page</label>
+            <select class="form-select" id="studentPageSize">
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100" selected>100</option>
+              <option value="250">250</option>
+              <option value="500">500</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Archived (soft-deleted) students notice -->
+        <div class="archive-notice" id="archiveNotice" hidden>
+          <i class="fa-solid fa-box-archive"></i>
+          <div>
+            <strong>Archived students</strong>
+            <span>These students were removed from the active register. Their attendance history is preserved. Use
+              <em>Restore</em> to return a student to the active list.</span>
+          </div>
+        </div>
+
+        <!-- Student table -->
+        <div class="card">
+          <div class="card-body flush">
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Father’s Name</th>
+                    <th>Roll No.</th>
+                    <th>Class</th>
+                    <th>Section</th>
+                    <th>Contact Number</th>
+                    <th>Address</th>
+                    <th>Attendance %</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                  <tr><td colspan="10" class="muted">Loading students…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="table-footer">
+            <span id="studentCount">Loading…</span>
+            <div class="pagination" id="pagination"></div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Add / edit student modal -->
+  <div class="modal-backdrop" id="studentModal" role="dialog" aria-modal="true" aria-labelledby="studentModalTitle">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="studentModalTitle">Add Student</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="studentForm" novalidate>
+        <div class="modal-body">
+          <div class="section-label">Student details</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="fName">Student Full Name <span class="req">*</span></label>
+              <input class="form-input" type="text" id="fName" name="name"
+                     placeholder="Full name of the student" required autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fStudentId">Student ID <span class="req">*</span></label>
+              <input class="form-input" type="text" id="fStudentId" name="studentId"
+                     placeholder="e.g. 2413" required autocomplete="off">
+              <p class="form-hint">Must be unique across the whole register.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fClass">Class <span class="req">*</span></label>
+              <select class="form-select" id="fClass" name="class" required></select>
+            </div>
+            <div class="form-group" id="studentSectionGroup">
+              <label class="form-label" for="fSection">Section</label>
+              <select class="form-select" id="fSection" name="section"></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fRollNo">Roll Number</label>
+              <input class="form-input" type="text" id="fRollNo" name="rollNo"
+                     placeholder="Auto-calculated from Student ID" readonly tabindex="-1">
+              <p class="form-hint">Assigned automatically: the smallest Student ID in the class gets Roll No. 1.</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fStatus">Status</label>
+              <select class="form-select" id="fStatus" name="status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-label">Family &amp; contact</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="fFatherName">Father’s Name <span class="req-opt">(optional)</span></label>
+              <input class="form-input" type="text" id="fFatherName" name="fatherName"
+                     placeholder="Father or guardian" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fMobile">Contact Number <span class="req-opt">(optional)</span></label>
+              <input class="form-input" type="tel" id="fMobile" name="mobile"
+                     placeholder="03XXXXXXXXX" autocomplete="off">
+              <p class="form-hint">The student’s own contact number.</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fPhone">Residential Phone <span class="req-opt">(optional)</span></label>
+              <input class="form-input" type="tel" id="fPhone" name="phone"
+                     placeholder="Landline or home number" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fAddress">Permanent Address <span class="req-opt">(optional)</span></label>
+              <input class="form-input" type="text" id="fAddress" name="address"
+                     placeholder="Street, area, city" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="section-label">Enrollment</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="fAdmissionDate">Admission Date <span class="req-opt">(optional)</span></label>
+              <input class="form-input" type="date" id="fAdmissionDate" name="admissionDate">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fDob">Date of Birth <span class="req-opt">(optional)</span></label>
+              <input class="form-input" type="date" id="fDob" name="dob">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fGender">Gender <span class="req-opt">(optional)</span></label>
+              <select class="form-select" id="fGender" name="gender">
+                <option value="">Select…</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fPhoto">Student Photograph <span class="req-opt">(optional)</span></label>
+              <div class="photo-field">
+                <span class="avatar" id="fPhotoPreview"></span>
+                <div class="photo-field-actions">
+                  <input class="form-input" type="file" id="fPhoto" name="photo" accept="image/*">
+                  <button type="button" class="btn btn-outline btn-sm" id="fPhotoClear" hidden>Remove photo</button>
+                  <p class="form-hint">Stored as a small thumbnail outside the register so the database stays fast.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveStudentBtn">
+            <i class="fa-solid fa-floppy-disk"></i> Save Student
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Student profile modal -->
+  <div class="modal-backdrop" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="profileModalTitle">Student Profile</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="profileContent"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Close</button>
+        <button type="button" class="btn btn-outline" id="profilePrintBtn">
+          <i class="fa-solid fa-print"></i> Print Profile
+        </button>
+        <button type="button" class="btn btn-primary" id="profileEditBtn">
+          <i class="fa-solid fa-pen"></i> Edit Student
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print student list options modal -->
+  <div class="modal-backdrop" id="printStudentsModal" role="dialog" aria-modal="true" aria-labelledby="printStudentsTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="printStudentsTitle">Print Student List</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-lead">A clean, official student list will be generated for printing.</p>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="dt-label">Scope</div>
+            <div class="dt-value" id="printStudentsScope">—</div>
+          </div>
+        </div>
+        <div class="section-label">Optional columns</div>
+        <label class="check-row"><input type="checkbox" id="pcolRoll"> Roll Number</label>
+        <label class="check-row"><input type="checkbox" id="pcolPhone"> Contact Number</label>
+        <label class="check-row"><input type="checkbox" id="pcolAddress"> Address</label>
+        <p class="form-hint">By default the list prints No., Student ID, Student Name, Father’s Name and Class only.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+        <button type="button" class="btn btn-primary" id="printStudentsConfirmBtn">
+          <i class="fa-solid fa-print"></i> Print
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk import modal -->
+  <div class="modal-backdrop" id="importStudentsModal" role="dialog" aria-modal="true" aria-labelledby="importStudentsTitle">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="importStudentsTitle">Import Students</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-lead">
+          Register many students at once from a CSV file. The first row must be a header row and must contain a
+          Student&nbsp;ID, a name and a class column.
+        </p>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="dt-label">Accepted columns</div>
+            <div class="dt-value">Student ID · Name · Class · Father’s Name · Contact Number · Residential Phone ·
+              Permanent Address · Admission Date · Gender</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="importFile">CSV file</label>
+          <input class="form-input" type="file" id="importFile" accept=".csv,text/csv">
+        </div>
+
+        <div class="import-actions">
+          <button type="button" class="btn btn-outline" id="importTemplateBtn">
+            <i class="fa-solid fa-download"></i> Download template
+          </button>
+          <button type="button" class="btn btn-outline" id="importParseBtn">
+            <i class="fa-solid fa-magnifying-glass-chart"></i> Preview file
+          </button>
+        </div>
+
+        <div id="importSummary" class="import-summary" hidden></div>
+
+        <div id="importPreview" hidden>
+          <div class="section-label">Preview <span id="importPreviewCount"></span></div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Row</th>
+                  <th>Student ID</th>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Father’s Name</th>
+                  <th>Contact</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="importPreviewBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+        <button type="button" class="btn btn-primary" id="importRunBtn" disabled>
+          <i class="fa-solid fa-file-import"></i> Import Students
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/students-import.js"></script>
+  <script src="js/print.js"></script>
+  <script src="js/students.js"></script>
+</body>
+</html>

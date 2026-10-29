@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Yearly academic planner 2026-2027 for Muslim Commerce College Peshawar.">
+  <title>Yearly Planner — Attendance Management System | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/planner.css">
+</head>
+
+<body data-page="planner" data-title="Yearly Planner">
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+
+        <div class="page-header">
+          <div>
+            <h2>Yearly Planner</h2>
+            <p class="page-sub">Academic planner for the session 2026&ndash;2027 (September 2026 &ndash; April 2027).</p>
+          </div>
+          <div class="page-actions">
+            <button type="button" class="btn btn-outline" id="plResetBtn">
+              <i class="fa-solid fa-rotate-left"></i> Reset edits
+            </button>
+            <button type="button" class="btn btn-primary" id="plPrintBtn">
+              <i class="fa-solid fa-print"></i> Print Planner
+            </button>
+          </div>
+        </div>
+
+        <div class="planner" id="plannerRoot">
+          <div class="pl-sheet">
+            <header class="pl-head" id="plHead"></header>
+            <div class="pl-toolbar" id="plToolbar"></div>
+            <div class="pl-months" id="plMonths"></div>
+            <div class="pl-panels" id="plPanels"></div>
+            <footer class="pl-foot" id="plFoot"></footer>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Edit event / holiday modal -->
+  <div class="modal-backdrop" id="plEventModal" role="dialog" aria-modal="true" aria-labelledby="plEventModalTitle">
+    <div class="modal pl-modal">
+      <div class="modal-header">
+        <h3 id="plEventModalTitle">Edit entry</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="plEventForm" novalidate>
+        <div class="modal-body">
+          <input type="hidden" id="plEvKind">
+          <input type="hidden" id="plEvId">
+
+          <div class="form-grid">
+            <div class="form-group span-2">
+              <label class="form-label" for="plEvTitle">Entry</label>
+              <input class="form-input" type="text" id="plEvTitle" readonly>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="plEvDate">Date</label>
+              <input class="form-input" type="date" id="plEvDate">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="plEvEnd">End date <span class="req-opt">(optional)</span></label>
+              <input class="form-input" type="date" id="plEvEnd">
+              <span class="form-hint">Use for multi-day events such as Eid holidays.</span>
+            </div>
+
+            <div class="form-group span-2">
+              <div class="pl-check">
+                <input type="checkbox" id="plEvVerified">
+                <label for="plEvVerified">Date confirmed (matches the official planner)</label>
+              </div>
+              <span class="form-hint">Leave unchecked when the date is not readable from the source image or still needs verification.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="plEvSave">
+            <i class="fa-solid fa-floppy-disk"></i> Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit month summary modal -->
+  <div class="modal-backdrop" id="plMonthModal" role="dialog" aria-modal="true" aria-labelledby="plMonthModalTitle">
+    <div class="modal pl-modal">
+      <div class="modal-header">
+        <h3 id="plMonthModalTitle">Edit month</h3>
+        <button type="button" class="icon-btn" data-modal-close aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="plMonthForm" novalidate>
+        <div class="modal-body">
+          <input type="hidden" id="plMonthKey">
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="plMonthTotal">Total lectures</label>
+              <input class="form-input" type="number" id="plMonthTotal" min="0" step="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="plMonthCoverage">Course coverage (%)</label>
+              <input class="form-input" type="text" id="plMonthCoverage" placeholder="e.g. 82%">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="plMonthYear1">1st Year</label>
+              <input class="form-input" type="text" id="plMonthYear1">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="plMonthYear2">2nd Year</label>
+              <input class="form-input" type="text" id="plMonthYear2">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="plMonthRevision">Revision period</label>
+              <input class="form-input" type="text" id="plMonthRevision">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="plMonthExam">Examination period</label>
+              <input class="form-input" type="text" id="plMonthExam">
+            </div>
+            <div class="form-group span-2">
+              <label class="form-label" for="plMonthRemarks">Remarks</label>
+              <textarea class="form-textarea" id="plMonthRemarks" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="plMonthSave">
+            <i class="fa-solid fa-floppy-disk"></i> Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/students-import.js"></script>
+  <script src="js/planner.js"></script>
+</body>
+</html>

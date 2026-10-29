@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="System settings for the Muslim Commerce College Peshawar attendance system.">
+  <title>Settings — Attendance Management System | Muslim Commerce College Peshawar</title>
+
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem('mca_settings') || '{}');
+        var t = (s.appearance && s.appearance.theme) || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        if (s.appearance && s.appearance.primary) {
+          document.documentElement.style.setProperty('--color-primary', s.appearance.primary);
+        }
+      } catch (e) { /* first run */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body data-page="settings" data-title="Settings">
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content">
+
+        <div class="page-header">
+          <div>
+            <h2>Settings</h2>
+            <p class="page-sub">College information, appearance and attendance rules.</p>
+          </div>
+          <div class="page-actions">
+            <span class="badge badge-blue"><i class="fa-regular fa-calendar"></i> Session <span id="sessionValue" class="nowrap"></span></span>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+
+          <!-- College information -->
+          <div class="card settings-section">
+            <div class="card-header">
+              <div>
+                <div class="card-title"><i class="fa-solid fa-building-columns"></i> College Information</div>
+                <div class="card-sub">Shown in the sidebar, reports and exports</div>
+              </div>
+            </div>
+            <form id="collegeForm" class="settings-form" novalidate>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group span-2">
+                    <label class="form-label" for="setCollegeName">College Name <span class="req">*</span></label>
+                    <input class="form-input" type="text" id="setCollegeName" name="collegeName" required>
+                  </div>
+                  <div class="form-group span-2">
+                    <label class="form-label" for="setAddress">Address</label>
+                    <input class="form-input" type="text" id="setAddress" name="address">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="setPhone">Phone</label>
+                    <input class="form-input" type="tel" id="setPhone" name="phone">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="setEmail">Email</label>
+                    <input class="form-input" type="email" id="setEmail" name="email">
+                  </div>
+                  <div class="form-group span-2">
+                    <label class="form-label" for="setWebsite">Website</label>
+                    <input class="form-input" type="text" id="setWebsite" name="website"
+                           placeholder="www.muslimcommerce.edu.pk">
+                  </div>
+                </div>
+              </div>
+              <div class="table-footer">
+                <span class="muted">Saved to local storage for this prototype.</span>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-floppy-disk"></i> Save College Info
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Appearance -->
+          <div class="card settings-section">
+            <div class="card-header">
+              <div>
+                <div class="card-title"><i class="fa-solid fa-palette"></i> Appearance</div>
+                <div class="card-sub">Primary color and light/dark mode</div>
+              </div>
+            </div>
+            <div class="card-body settings-form">
+
+              <div class="form-group">
+                <label class="form-label" for="primaryColor">Primary color</label>
+                <div class="color-row">
+                  <input class="color-picker" type="color" id="primaryColor" value="#1c3d5f"
+                         title="Pick a primary color">
+                  <div class="color-swatches">
+                    <button type="button" class="color-swatch" data-color="#1c3d5f" title="Navy"></button>
+                    <button type="button" class="color-swatch" data-color="#0f766e" title="Teal"></button>
+                    <button type="button" class="color-swatch" data-color="#1e40af" title="Blue"></button>
+                    <button type="button" class="color-swatch" data-color="#5b21b6" title="Violet"></button>
+                    <button type="button" class="color-swatch" data-color="#9f1239" title="Crimson"></button>
+                    <button type="button" class="color-swatch" data-color="#b45309" title="Amber"></button>
+                  </div>
+                </div>
+                <span class="form-hint">Applies instantly across every page.</span>
+              </div>
+
+              <div class="form-group mt-16">
+                <label class="form-label">Theme</label>
+                <div class="segmented" role="group" aria-label="Theme">
+                  <button type="button" data-theme-set="light">
+                    <i class="fa-regular fa-sun"></i> Light
+                  </button>
+                  <button type="button" data-theme-set="dark">
+                    <i class="fa-regular fa-moon"></i> Dark
+                  </button>
+                </div>
+                <span class="form-hint">Also available from the moon icon in the top bar.</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Attendance settings -->
+          <div class="card settings-section">
+            <div class="card-header">
+              <div>
+                <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> Attendance Settings</div>
+                <div class="card-sub">Threshold, late policy and default sheet status</div>
+              </div>
+            </div>
+            <form id="attendanceForm" class="settings-form" novalidate>
+              <div class="card-body">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="thresholdInput">Attendance threshold (%) <span class="req">*</span></label>
+                    <input class="form-input" type="number" id="thresholdInput" name="threshold"
+                           min="50" max="100" step="1" required>
+                    <span class="form-hint">Minimum attendance required from a student (50–100).</span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="latePolicySelect">Late policy</label>
+                    <select class="form-select" id="latePolicySelect" name="latePolicy">
+                      <option value="0">No grace period — late counts absent</option>
+                      <option value="10">10 minute grace period</option>
+                      <option value="15">15 minute grace period</option>
+                      <option value="20">20 minute grace period</option>
+                    </select>
+                  </div>
+                  <div class="form-group span-2">
+                    <label class="form-label" for="defaultStatusSelect">Default status for a new sheet</label>
+                    <select class="form-select" id="defaultStatusSelect" name="defaultStatus">
+                      <option value="present">Present (pre-marked)</option>
+                      <option value="absent">Absent (pre-marked)</option>
+                      <option value="leave">Leave (pre-marked)</option>
+                      <option value="none">Unmarked — choose each student manually</option>
+                    </select>
+                    <span class="form-hint">Applied when no saved sheet exists for the selected date.</span>
+                  </div>
+                </div>
+              </div>
+              <div class="table-footer">
+                <span class="muted">Used by the Take Attendance page.</span>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-floppy-disk"></i> Save Settings
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Data and backup -->
+          <div class="card settings-section">
+            <div class="card-header">
+              <div>
+                <div class="card-title"><i class="fa-solid fa-database"></i> Data &amp; Backup</div>
+                <div class="card-sub">Browser storage, export and reset</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="muted">
+                Records are stored in this browser and mirrored to the local server when it is running.
+                Export a JSON backup before resetting, moving to another computer, or clearing browser data.
+                Photographs are stored separately in IndexedDB and are not included in the JSON backup.
+              </p>
+            </div>
+            <div class="table-footer">
+              <span class="muted">A reset erases every student, class, attendance, examination and mark.</span>
+              <div class="actions-cell">
+                <button type="button" class="btn btn-outline" id="exportBackupBtn">
+                  <i class="fa-solid fa-download"></i> Download Backup
+                </button>
+                <button type="button" class="btn btn-danger" id="resetDataBtn">
+                  <i class="fa-solid fa-rotate-left"></i> Reset All Data
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>
