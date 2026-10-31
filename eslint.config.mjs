@@ -12,6 +12,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vanilla app runtime (CommonJS/browser IIFEs) is verified by node --check
+    // and the backend harnesses, not by the Next.js linter.
+    "server.js",
+    "js/**",
+    "scripts/**",
+    "tests/**",
+    "muslim-commerce-attendance/**",
   ]),
 ]);
 

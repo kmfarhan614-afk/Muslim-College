@@ -1,1 +1,5 @@
-import { redirect } from 'next/navigation';\n\nexport default function Page() {\n  redirect('/admin.html');\n}\n
+import { redirect } from 'next/navigation';
+
+export default function Page() {
+  redirect('/admin.html');
+}

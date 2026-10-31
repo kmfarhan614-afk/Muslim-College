@@ -78,12 +78,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Conventions
 - Vanilla JS, IIFE modules, globals `Utils/Store/Seed/db/auth/UI/Chrome`. No build step, no npm deps for the app.
 - No comments unless present in surrounding code. Keep HTML ids in sync with JS.
-- Verify: `node --check` each edited JS file, then the harnesses in `C:\Users\DELL\AppData\Local\Temp\opencode\`:
-  `mca-server-harness.js` (server API + 10k register), `mca-app-harness.js` (db.students core),
-  `mca-students-ui-harness.js` (students page via jsdom), `mca-exams-ui-harness.js` (exam tabs,
-  result engine, DMC, print), `mca-teacher-portal-harness.js` (teacher/admin auth, RBAC,
-  attendance/marks/results/DMC, audit, restart persistence), `mca-wiring-harness.js`
-  (element ids + script order). Confirm root↔mirror MD5.
+- Verify: `node --check` each edited JS file, then `npm test` (runs `tests/mca-server-harness.js`,
+  `mca-teacher-portal-harness.js`, `mca-sabih-preset-harness.js`, `mca-wiring-harness.js`).
+  UI harnesses still live in `C:\Users\DELL\AppData\Local\Temp\opencode\`: `mca-app-harness.js`
+  (db.students core), `mca-students-ui-harness.js` (students page via jsdom),
+  `mca-exams-ui-harness.js` (exam tabs, result engine, DMC, print). Also `npm run lint` and
+  `npm run build` (Next scaffold). Confirm root↔mirror MD5.
 
 ## Known open items
 - DMC reference image not yet supplied — DMC currently follows the written spec above; refine layout/typography when a sample is provided.

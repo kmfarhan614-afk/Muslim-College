@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   cacheComponents: false,
   reactStrictMode: true,
   turbopack: {
+    root: process.cwd(),
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

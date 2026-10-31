@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "echo static-site",
+  "buildCommand": "echo static-site",
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/api", "destination": "https://YOUR-BACKEND.onrender.com/api" },
+    { "source": "/api/:path*", "destination": "https://YOUR-BACKEND.onrender.com/api/:path*" },
+    { "source": "/administration", "destination": "/admin.html" },
+    { "source": "/super-admin", "destination": "/admin.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/administration.html", "destination": "/admin.html" },
+    { "source": "/superadmin", "destination": "/admin.html" },
+    { "source": "/super-admin.html", "destination": "/admin.html" },
+    { "source": "/teachers", "destination": "/teachers.html" },
+    { "source": "/teacher-management", "destination": "/teacher-accounts.html" },
+    { "source": "/teacheraccounts", "destination": "/teacher-accounts.html" },
+    { "source": "/teacher-accounts", "destination": "/teacher-accounts.html" },
+    { "source": "/teacherportal", "destination": "/teacher-login.html" },
+    { "source": "/teacher-portal", "destination": "/teacher-login.html" },
+    { "source": "/teacherdashboard", "destination": "/teacher-dashboard.html" },
+    { "source": "/teacher-dashboard", "destination": "/teacher-dashboard.html" }
+  ]
+}

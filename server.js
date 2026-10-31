@@ -21,7 +21,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const PORT = Number(process.env.PORT) || 3000;
-const HOST = process.env.HOST || '127.0.0.1';
+const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1');
 const ROOT = __dirname;
 const DATA_DIR = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(ROOT, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
@@ -46,8 +46,16 @@ const DB_FILE = path.join(DATA_DIR, 'db.json');
 
 /* Demo credentials — keep in sync with the seeded client defaults.
    Override with env vars when deploying. */
+const DEFAULT_ADMIN_PASSWORD = 'admin123';
 const DEMO_EMAIL = (process.env.ADMIN_EMAIL || 'admin@college.com').toLowerCase();
-const DEMO_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const DEMO_PASSWORD = process.env.ADMIN_PASSWORD || DEFAULT_ADMIN_PASSWORD;
+const USING_DEFAULT_ADMIN_PASSWORD = DEMO_PASSWORD === DEFAULT_ADMIN_PASSWORD;
+
+/* Fail closed: never expose the well-known demo password on a production host. */
+if (process.env.NODE_ENV === 'production' && USING_DEFAULT_ADMIN_PASSWORD) {
+  console.error('[server] Refusing to start: set ADMIN_PASSWORD (and ADMIN_EMAIL) before running in production.');
+  process.exit(1);
+}
 
 const TOKEN_TTL_MS = 12 * 60 * 60 * 1000; /* 12 hours */
 const MAX_BODY = 24 * 1024 * 1024;        /* 24 MB per request (bulk register) */
@@ -792,9 +800,9 @@ function hasAnyData() {
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/+$/, '');
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const SUPABASE_KEY = SUPABASE_SERVICE_KEY || SUPABASE_ANON_KEY;
-const SUPABASE_ON = Boolean(SUPABASE_URL && SUPABASE_KEY);
+const SUPABASE_PUBLIC_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const SUPABASE_KEY = SUPABASE_SERVICE_KEY;
+const SUPABASE_ON = Boolean(SUPABASE_URL && SUPABASE_SERVICE_KEY);
 
 const STATUS_TO_DB = { present: 'Present', absent: 'Absent', leave: 'Leave' };
 const STATUS_FROM_DB = { Present: 'present', Absent: 'absent', Leave: 'leave' };
@@ -835,6 +843,20 @@ async function sb(route, options) {
 async function sbSelect(table, query) {
   const result = await sb(table + (query ? '?' + query : ''));
   return Array.isArray(result.data) ? result.data : [];
+}
+
+async function sbPublicGet(route) {
+  if (!SUPABASE_URL) return { ok: false, status: 0, data: null };
+  const headers = { Accept: 'application/json' };
+  if (SUPABASE_PUBLIC_KEY) {
+    headers.apikey = SUPABASE_PUBLIC_KEY;
+    headers.Authorization = 'Bearer ' + SUPABASE_PUBLIC_KEY;
+  }
+  const res = await fetch(SUPABASE_URL + route, { headers: headers });
+  let data = null;
+  const text = await res.text();
+  if (text) { try { data = JSON.parse(text); } catch (err) { data = text; } }
+  return { ok: res.ok, status: res.status, data: data };
 }
 
 async function sbUpsert(table, rows, onConflict) {
@@ -922,18 +944,38 @@ async function handleSupabaseAPI(req, res, pathname, method) {
   /* Status is always answerable, even while disabled. */
   if (pathname === '/api/supabase/status' && method === 'GET') {
     let reachable = false;
+    let schemaReady = false;
     let error = null;
-    if (SUPABASE_ON) {
-      try { await sbSelect('academic_sessions', 'select=id&limit=1'); reachable = true; }
-      catch (err) { error = err.message; }
+    if (SUPABASE_URL) {
+      try {
+        const ping = await sbPublicGet('/auth/v1/health');
+        reachable = ping.ok;
+        if (!ping.ok) error = 'Supabase auth health returned HTTP ' + ping.status;
+      } catch (err) { error = err.message; }
     }
+    if (SUPABASE_ON) {
+      try {
+        await sbSelect('academic_sessions', 'select=id&limit=1');
+        schemaReady = true;
+      } catch (err) {
+        if (!error) error = err.message;
+      }
+    }
+    const missing = [];
+    if (!SUPABASE_URL) missing.push('SUPABASE_URL');
+    if (!SUPABASE_SERVICE_KEY) missing.push('SUPABASE_SERVICE_ROLE_KEY');
     sendJSON(res, 200, {
       ok: true,
       configured: SUPABASE_ON,
       reachable: reachable,
+      schemaReady: schemaReady,
       url: SUPABASE_URL || null,
-      keyType: SUPABASE_SERVICE_KEY ? 'service_role' : (SUPABASE_ANON_KEY ? 'anon' : null),
-      error: error
+      keyType: SUPABASE_SERVICE_KEY ? 'service_role' : (SUPABASE_PUBLIC_KEY ? 'publishable' : null),
+      missing: missing,
+      error: error,
+      message: SUPABASE_ON
+        ? (schemaReady ? null : 'Connected, but the database schema is missing. Run supabase/schema.sql in the Supabase SQL Editor.')
+        : 'Add SUPABASE_SERVICE_ROLE_KEY to .env.local (Supabase Project Settings -> API keys -> secret key), then restart server.js.'
     });
     return true;
   }
@@ -2978,7 +3020,8 @@ async function handleAPI(req, res, pathname) {
       service: 'muslim-commerce-attendance',
       time: new Date().toISOString(),
       hasData: hasAnyData(),
-      supabase: SUPABASE_ON
+      supabase: SUPABASE_ON,
+      demoAuth: USING_DEFAULT_ADMIN_PASSWORD
     });
   }
 
@@ -3264,7 +3307,18 @@ server.listen(PORT, HOST, () => {
   console.log('==========================================================');
 });
 
-process.on('SIGINT', () => {
-  console.log('\n[server] shutting down');
-  saveStore().finally(() => process.exit(0));
+server.on('error', (err) => {
+  console.error('[server] failed to start on ' + HOST + ':' + PORT + ':', err.message);
+  process.exit(1);
 });
+
+let shuttingDown = false;
+function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log('\n[server] shutting down (' + signal + ')');
+  saveStore().finally(() => process.exit(0));
+}
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));

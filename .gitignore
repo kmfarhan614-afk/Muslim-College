@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/tests/*-data/
 
 # runtime data (server.js state files, backups and snapshots)
 /data
@@ -35,9 +36,14 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+!.env.local.example
 
 # vercel
 .vercel
+
+# supabase cli
+/supabase/.temp/
 
 # typescript
 *.tsbuildinfo
